@@ -14,6 +14,28 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// task4
+app.Use(async (context, next) =>
+{
+    var start = DateTime.Now;
+    Console.WriteLine($"Request started: {context.Request.Method} {context.Request.Path} at {start:HH:mm:ss}");
+
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["X-Student"] = "Biedarieva";
+        return Task.CompletedTask;
+    });
+
+    await next.Invoke();
+
+    var end = DateTime.Now;
+    var duration = (end - start).TotalMilliseconds;
+    Console.WriteLine(
+    $"Request finished: {context.Request.Method} {context.Request.Path} at {end:HH:mm:ss} " +
+    $"(Duration: {duration} ms)");
+});
+
+
 // task1
 app.MapGet("/api/greeting", (string firstName, string lastName) =>
 {
